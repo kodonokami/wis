@@ -16,3 +16,9 @@ arpspoof detectado
 logs
 
 ![](https://i.imgur.com/A2OUYfC.png)
+
+[+] v1.1
+
+ultimas conexoes
+
+![](https://i.imgur.com/VfawAzT.png)

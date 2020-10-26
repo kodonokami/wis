@@ -58,6 +58,10 @@ while($linconf = readline(KARQ_CONF)){
 			chomp($arr_conf[1]);
 			 $log = $arr_conf[1];
 		}
+		elsif($arr_conf[0] eq "conexao_qnt"){
+			chomp($arr_conf[1]);
+			 $conexao_qnt = $arr_conf[1];
+		}
 	}
 }
 
@@ -100,7 +104,7 @@ while(1){
 								
 								if($arpspoofing_log == 0){
 									open(KARQ_LOG,">>" . $log);
-									print KARQ_LOG "$tempo[3]/$tempo[4]/" . ($tempo[5] + 1900) ." $tempo[2]:$tempo[1] ataque de arpspoofing para $mspo[0]\n";
+									print KARQ_LOG "$tempo[3]/" . ($tempo[4] + 1) ."/" . ($tempo[5] + 1900) ." $tempo[2]:$tempo[1] ataque de arpspoofing para $mspo[0]\n";
 									$arpspoofing_log = 1;
 									close(KARQ_LOG);
 								}
@@ -178,7 +182,7 @@ while(1){
 				print KARQ_NEW $param[0] . "\n";
 				
 				open(KARQ_LOG,">>" . $log);
-				print KARQ_LOG "$tempo[3]/$tempo[4]/" . ($tempo[5] + 1900) ." $tempo[2]:$tempo[1] primeira conexao $param[0]\n";
+				print KARQ_LOG "$tempo[3]/" . ($tempo[4] + 1) . "/" . ($tempo[5] + 1900) ." $tempo[2]:$tempo[1] primeira conexao $param[0]\n";
 				close(KARQ_LOG);
 				close(KARQ_NEW);
 			}
@@ -226,7 +230,7 @@ while(1){
 
 		if($mac_i == 0){
 			open(KARQ_LOG,">>" . $log);
-			print KARQ_LOG "$tempo[3]/$tempo[4]/" . ($tempo[5] + 1900) ." $tempo[2]:$tempo[1] conexao $param[0] ($macs->{$param[0]}) \n";	
+			print KARQ_LOG "$tempo[3]/" . ($tempo[4] + 1) . "/" . ($tempo[5] + 1900) ." $tempo[2]:$tempo[1] conexao $param[0] ($macs->{$param[0]}) \n";	
 			close(KARQ_LOG)
 		}
 		push(@macs_temp,$param[0]);
@@ -235,6 +239,36 @@ while(1){
 	undef @macs_old;
 	@macs_old = @macs_temp;
 	undef @macs_temp;
+	
+	#conexao efetuada hoje
+	open(KARQ,"<logs.txt");
+	print color('yellow');
+	print "\n--- conexões hoje ---\n\n";
+	my $contcon = 0;
+	my @conh;
+	while($l = readline(KARQ))
+	{
+		print color('cyan');
+		$hoje = "$tempo[3]/" . ($tempo[4]+1) . "/" . ($tempo[5] + 1900);
+		if($l =~ /^$hoje/){
+			if($conexao_qnt == 0){
+				print $l;
+			}
+			else{
+				push(@conh,$l);
+				if($contcon >= int($conexao_qnt)){
+					shift(@conh)
+				}
+				$contcon++;
+			}
+		}
+	}
+	if($conexao_qnt != 0){
+		foreach $ch(@conh){
+			print $ch;
+		}
+	}
+	undef(@conh);
 	
 	sleep($tempo);
 }
